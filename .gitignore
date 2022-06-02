@@ -1,0 +1,4 @@
+__pycache__/
+journal_menu.bat
+*.pyc
+list.pkl
