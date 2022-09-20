@@ -104,7 +104,14 @@ Stats Menu
             print(' %-20s | %d' % (word, len(word)))
 
     def find_most_common_letters(self):
-        print('Nothing here yet')
+        letter_counts, total = self.journal.find_most_common_letters()
+        line = 11 * '-'
+        print()
+        print(' %-10s | %-10s | %-10s' % ('letter', 'occurances', 'percentage'))
+        print(' ' + line + '+' + line + '-+' + line)
+        for letter in letter_counts:
+            print(' %-10s | %-10d | %5.2f' % (letter[0], letter[1], (letter[1]/total) * 100 ))
+
         
     def make_choice(self, choices):
         choice = input('Enter an option: ')

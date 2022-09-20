@@ -65,6 +65,21 @@ class Journal:
         sorted_by_len = sorted(all_words, key=len, reverse=True)
                                
         return sorted_by_len[0:10]
+
+    def find_most_common_letters(self):
+
+        all_letters = []
+
+        for entry in self.entries:
+            for char in entry.words:
+                if char.isalpha():
+                    all_letters.append(char.lower())
+
+        c = Counter(all_letters)
+
+        return c.most_common(26), c.total()
+
+
             
             
         
