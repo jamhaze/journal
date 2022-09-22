@@ -1,4 +1,4 @@
-import datetime, pickle, random,  re
+import datetime, pickle, random,  re, string
 from collections import Counter
 
 class Entry:
@@ -58,26 +58,44 @@ class Journal:
         all_words = self.return_all_words()
         c = Counter(all_words)
 
-        return c.most_common(10)
+        return c.most_common(20)
             
     def find_longest_words(self):
         all_words = list(dict.fromkeys(self.return_all_words()))
         sorted_by_len = sorted(all_words, key=len, reverse=True)
-                               
-        return sorted_by_len[0:10]
+
+        if len(sorted_by_len) > 20:
+            top_twenty_sorted_by_len = sorted_by_len[0:20]
+            return top_twenty_sorted_by_len
+        else:
+            return sorted_by_len
 
     def find_most_common_letters(self):
 
-        all_letters = []
+        letter_counts = dict.fromkeys(string.ascii_lowercase, 0)
+        total = 0
 
         for entry in self.entries:
             for char in entry.words:
-                if char.isalpha():
-                    all_letters.append(char.lower())
+                lowercase_char = char.lower()
+                if lowercase_char in letter_counts.keys():
+                    letter_counts[lowercase_char] += 1
+                    total += 1
 
-        c = Counter(all_letters)
+        return sorted(letter_counts, key=letter_counts.get, reverse=True), letter_counts, total
 
-        return c.most_common(26), c.total()
+    def find_most_common_word_combos(self):
+        all_words = self.return_all_words()
+
+        all_combos = []
+
+        for i in range(len(all_words) - 1):
+            word_combo = (all_words[i], all_words[i + 1])
+            all_combos.append(word_combo)
+
+        c = Counter(all_combos)
+
+        return c.most_common(10)
 
 
             

@@ -1,5 +1,6 @@
 import sys, textwrap
 from journal import Journal
+from texttable import Texttable
 
 class Menu:
     '''Display a menu and respond to choices when run.'''
@@ -15,7 +16,8 @@ class Menu:
         self.stats_choices = {
                 '1': self.find_most_common_words,
                 '2': self.find_longest_words,
-                '3': self.find_most_common_letters
+                '3': self.find_most_common_letters,
+                '4': self.find_most_common_word_combos
                 }
 
     def display_menu(self):
@@ -36,7 +38,8 @@ Stats Menu
 1. Most Common Words
 2. Longest Words
 3. Most Common Letters
-4. Back to Main Menu
+4. Most Common Word Combos
+5. Back to Main Menu
 ''')
 
     def run(self):
@@ -65,7 +68,7 @@ Stats Menu
     def search_entries(self):
         print()
         text = input(
-            'Search for words (case sensitive) or dates (YYYY-MM-DD): ')
+            'Enter a string to search: ')
         entries = self.journal.search(text)
         if not entries:
             print()
@@ -83,36 +86,59 @@ Stats Menu
 
     def stats(self):
         choice = ''
-        while choice != '4':
+        while choice != '5':
             self.display_stats_menu()
             choice = self.make_choice(self.stats_choices)
 
     def find_most_common_words(self):
         word_counts = self.journal.find_most_common_words()
-        print()
-        print(' %-10s | %-10s' % ('word', 'occurances'))
-        print(' -----------+-----------')
+
+        table = Texttable()
+        table.header(['word', 'occurances'])
+
         for word in word_counts:
-            print(' %-10s | %d' % (word[0], word[1]))
+            table.add_row([word[0], word[1]])
+
+        print()
+        print(table.draw())
 
     def find_longest_words(self):
-        ten_longest = self.journal.find_longest_words()
+        ten_longest_words = self.journal.find_longest_words()
+
+        table = Texttable()
+        table.header(['word', 'length'])
+
+        for word in ten_longest_words:
+            table.add_row([word, len(word)])
+
         print()
-        print(' %-20s | %-20s' % ('word', 'length'))
-        print(' ---------------------+---------------------')
-        for word in ten_longest:
-            print(' %-20s | %d' % (word, len(word)))
+        print(table.draw())
 
     def find_most_common_letters(self):
-        letter_counts, total = self.journal.find_most_common_letters()
-        line = 11 * '-'
-        print()
-        print(' %-10s | %-10s | %-10s' % ('letter', 'occurances', 'percentage'))
-        print(' ' + line + '+' + line + '-+' + line)
-        for letter in letter_counts:
-            print(' %-10s | %-10d | %5.2f' % (letter[0], letter[1], (letter[1]/total) * 100 ))
+        letter_order, letter_counts, total = self.journal.find_most_common_letters()
 
+        table = Texttable()
+        table.header(['letter', 'occurances', 'percentage'])
+
+        for letter in letter_order:
+            count = letter_counts[letter]
+            table.add_row([letter, count, (count/total) * 100])
         
+        print()
+        print(table.draw())
+
+    def find_most_common_word_combos(self):
+        word_combos = self.journal.find_most_common_word_combos()
+
+        table = Texttable()
+        table.header(['word combo', 'occurances'])
+
+        for word_combo in word_combos:
+            table.add_row([word_combo[0][0] + ' ' + word_combo[0][1], word_combo[1]])
+
+        print()
+        print(table.draw())
+
     def make_choice(self, choices):
         choice = input('Enter an option: ')
         action = choices.get(choice)
