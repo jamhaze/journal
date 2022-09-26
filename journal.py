@@ -90,7 +90,7 @@ class Journal:
         all_combos = []
 
         for i in range(len(all_words) - 1):
-            word_combo = (all_words[i], all_words[i + 1])
+            word_combo = all_words[i] + ' ' + all_words[i + 1]
             all_combos.append(word_combo)
 
         c = Counter(all_combos)
