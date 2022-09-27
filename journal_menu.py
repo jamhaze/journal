@@ -52,6 +52,9 @@ Stats Menu
     # This method runs the main menu in a loop until the user selects '5' (Quit).
     def run(self):
         
+        print()
+        print('Journal')
+
         choice = ''
         while choice != '5':
 
