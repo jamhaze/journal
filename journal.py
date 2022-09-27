@@ -52,19 +52,22 @@ class Journal:
     # Returns a list containing all the words in all entries.
     def return_all_words(self):
 
-        # Create a regex that matches any character that is not a letter, space, apostrophe or dash.
-        regex = re.compile('[^a-zA-Z \'\-]')
-
         all_words = []
         
         for entry in self.entries:
-            # Create a list of words with things like full stops, commas, questions marks etc. removed.
-            subbed_words = regex.sub('', entry.words).split(' ')
-            for word in subbed_words:
 
-                # Only add the word if it is actually a word.  (Could be blank if due to successive spaces)
-                if word:
-                    all_words.append(word.lower())
+            # Split the entries at whitespace.
+            words = entry.words.split()
+
+            for word in words:
+
+                # Subs out all non-letter characters at the beginning or end of a string before appending the string
+                # to all_words.
+                subbed_word = re.sub('^[^a-zA-Z]*|[^a-zA-Z]*$', '', word)
+
+                # Check subbed_word is not an empty string.
+                if subbed_word:
+                    all_words.append(subbed_word.lower())
 
         return all_words
 
