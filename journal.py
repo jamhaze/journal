@@ -1,4 +1,4 @@
-import datetime, pickle, random,  re, string
+import datetime, pickle, random,  re, string, os, sys
 from collections import Counter
 
 class Entry:
@@ -17,25 +17,29 @@ class Entry:
 class Journal:
 
     def __init__(self):
+
+        # Open list.pkl and load all the Entry objects into a list called entries. (The pickle file stores objects in a 
+        # binary format).  If list.pkl doesn't exist, it will be created in the current directory.
         try:
-            with open(
-                r'C:\Users\James\Documents\Python\myScripts\journal\list.pkl',
-                'rb') as file:
-                    self.entries = pickle.load(file)
+            with open(os.path.join(sys.path[0], 'list.pkl'), 'rb') as file:
+                self.entries = pickle.load(file)
+
+        # This exception will only occur if the pickle file is empty, so create an empty list.
         except EOFError:
             self.entries = []
 
     def new_entry(self, words):
+
+        # Create a new Entry object with the words supplied by the user and append it to the entries list.
         self.entries.append(Entry(words))
-        with open(
-                r'C:\Users\James\Documents\Python\myScripts\journal\list.pkl',
-                'wb') as file:
-                    pickle.dump(self.entries, file)
+
+        # Dump the entries array into the pickle file.
+        with open(os.path.join(sys.path[0], 'list.pkl'), 'wb') as file:
+            pickle.dump(self.entries, file)
 
     def search(self, text):
         '''Find all entries that match the text string.'''
-        return [entry for entry in self.entries if
-                entry.match(text)]
+        return [entry for entry in self.entries if entry.match(text)]
 
     def random_entry(self):
         index = random.randint(0, len(self.entries) - 1)
