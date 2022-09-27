@@ -1,5 +1,4 @@
 __pycache__/
-.gitignore
 journal_menu.bat
 *.pyc
 list.pkl
