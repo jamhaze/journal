@@ -82,9 +82,15 @@ class Journal:
     # Return a list of the longest words.
     def find_longest_words(self):
 
-        # A list of all words from longest to shortest.
-        sorted_by_len = sorted(self.return_all_words(), key=len, reverse=True)
+        # Convert to set to remove duplicates.
+        all_words_set = set(self.return_all_words())
 
+        all_words = list(all_words_set)
+
+        # A list of all words from longest to shortest.
+        sorted_by_len = sorted(all_words, key=len, reverse=True)
+
+        #TODO make sure there are no duplicates.
         # Return a list that either contains the top twenty longest words or all the words if there are less than twenty
         # words. (The zip function returns an iterator that is the length of the parameter with the least items)
         return [x for _, x in zip(range(20), sorted_by_len)]
