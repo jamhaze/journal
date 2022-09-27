@@ -120,8 +120,8 @@ Stats Menu
         table = Texttable()
         table.header(['word', 'occurances'])
 
-        for word in word_counts:
-            table.add_row([word[0], word[1]])
+        for word_count in word_counts:
+            table.add_row([word_count[0], word_count[1]])
 
         print()
         print(table.draw())
@@ -144,17 +144,14 @@ Stats Menu
     # Displays a table with the letters of the alphabet, their occurances, and their total percentage of all letters used.
     def find_most_common_letters(self):
 
-        # letter_order is a list containing the order of the letters from most to least frequent.
-        # letter_counts is a dictionary of the letters and their counts.
-        # total is the total number of letters used in the journal.
-        letter_order, letter_counts, total = self.journal.find_most_common_letters()
+        letter_counts, total = self.journal.find_most_common_letters()
 
         table = Texttable()
         table.header(['letter', 'occurances', 'percentage'])
 
-        for letter in letter_order:
-            count = letter_counts[letter]
-            table.add_row([letter, count, (count/total) * 100])
+        for letter_count in letter_counts:
+            count = letter_count[1]
+            table.add_row([letter_count[0], count, (count/total) * 100])
         
         print()
         print(table.draw())

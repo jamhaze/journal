@@ -2,15 +2,16 @@ import datetime, pickle, random,  re, string, os, sys
 from collections import Counter
 
 class Entry:
-    '''Represents an entry in the journal.'''
-
+    
+    # The Entry object is initialised with two attributes:  The words making up the entry and the date of its
+    # submission.
     def __init__(self, words):
-        '''Initialize an entry.'''
+        
         self.words = words
         self.date = datetime.date.today()
 
-    def match(self, text):
-        '''Determine if an entry matches the search text.'''
+    # This method returns true if the text parameter is contained within either the date or words.
+    def contains(self, text):
 
         return text in str(self.date) or text in self.words
 
@@ -37,58 +38,78 @@ class Journal:
         with open(os.path.join(sys.path[0], 'list.pkl'), 'wb') as file:
             pickle.dump(self.entries, file)
 
+    # This method returns a list with entries that contain the text parameter in the date or words.
     def search(self, text):
-        '''Find all entries that match the text string.'''
-        return [entry for entry in self.entries if entry.match(text)]
+        
+        return [entry for entry in self.entries if entry.contains(text)]
 
+    # This method returns a random entry from entries.
     def random_entry(self):
+
         index = random.randint(0, len(self.entries) - 1)
         return self.entries[index]
 
+    # Returns a list containing all the words in all entries.
     def return_all_words(self):
+
+        # Create a regex that matches any character that is not a letter, space, apostrophe or dash.
         regex = re.compile('[^a-zA-Z \'\-]')
 
         all_words = []
         
         for entry in self.entries:
-            no_punc = regex.sub('', entry.words).split(' ')
-            for word in no_punc:
+            # Create a list of words with things like full stops, commas, questions marks etc. removed.
+            subbed_words = regex.sub('', entry.words).split(' ')
+            for word in subbed_words:
+
+                # Only add the word if it is actually a word.  (Could be blank if due to successive spaces)
                 if word:
                     all_words.append(word.lower())
 
         return all_words
 
+    # Returns the twenty most common words and their counts.
     def find_most_common_words(self):
+
         all_words = self.return_all_words()
         c = Counter(all_words)
 
         return c.most_common(20)
-            
+
+    # Return a list of the longest words.
     def find_longest_words(self):
-        all_words = list(dict.fromkeys(self.return_all_words()))
-        sorted_by_len = sorted(all_words, key=len, reverse=True)
 
-        if len(sorted_by_len) > 20:
-            top_twenty_sorted_by_len = sorted_by_len[0:20]
-            return top_twenty_sorted_by_len
-        else:
-            return sorted_by_len
+        # A list of all words from longest to shortest.
+        sorted_by_len = sorted(self.return_all_words(), key=len, reverse=True)
 
+        # Return a list that either contains the top twenty longest words or all the words if there are less than twenty
+        # words. (The zip function returns an iterator that is the length of the parameter with the least items)
+        return [x for _, x in zip(range(20), sorted_by_len)]
+
+    # Returns a sorted list of letter counts and the total amount of letters used.
     def find_most_common_letters(self):
 
-        letter_counts = dict.fromkeys(string.ascii_lowercase, 0)
+        # Make a regex to match any non-letter characters.
+        regex = re.compile('[^a-zA-Z]')
+
+        # Make a counter with lowercase letters as keys.
+        letter_counts = Counter(dict.fromkeys(string.ascii_lowercase, 0))
         total = 0
 
         for entry in self.entries:
-            for char in entry.words:
-                lowercase_char = char.lower()
-                if lowercase_char in letter_counts.keys():
-                    letter_counts[lowercase_char] += 1
-                    total += 1
 
-        return sorted(letter_counts, key=letter_counts.get, reverse=True), letter_counts, total
+            # remove all non-letter characters from entry.words
+            subbed_entry = regex.sub('', entry.words)
 
+            # Update the Counter and the total.
+            letter_counts.update(subbed_entry.lower())
+            total += len(subbed_entry)
+
+        return letter_counts.most_common(26), total
+
+    # Returns a sorted list of the most common word combos used in the dictionary.
     def find_most_common_word_combos(self):
+
         all_words = self.return_all_words()
 
         all_combos = []
