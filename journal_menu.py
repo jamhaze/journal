@@ -1,5 +1,6 @@
-import sys, textwrap
+import sys, textwrap, os
 from journal import Journal
+from termcolor import colored
 from texttable import Texttable
 
 class Menu:
@@ -51,6 +52,8 @@ Stats Menu
 
     # This method runs the main menu in a loop until the user selects '5' (Quit).
     def run(self):
+
+        os.system('color')
         
         print()
         print('Journal')
@@ -68,28 +71,62 @@ Stats Menu
         sys.exit(0)
             
     # This method dispalys all the elements in the list entries
-    def show_entries(self, entries):
+    def show_entries(self, entries, match):
+
         for entry in entries:
-            self.show_entry(entry)
+
+            self.show_entry(entry, match=match)
 
     # Prints an entry in a neatly formatted way.
-    def show_entry(self, entry):
+    def show_entry(self, entry, match=None):
+
+        date = entry.date
+        words = entry.words
+
+        # If the match variable contains a string replace the values of date and words with
+        # the results of the color_text_match method.
+        if match:
+           date = self.color_text_match(str(entry.date), match)
+           words = self.color_text_match(entry.words, match)
+
+        # Print date and words in a formatted way.
         print()
         print('{0} - {1}'.format(
-            str(entry.date), textwrap.fill(entry.words,
-                                           100,
-                                           subsequent_indent='\t     ')))
+            date, textwrap.fill(words,
+                                100,
+                                subsequent_indent='\t     ')))
+
+    # Colours any match contained within text.
+    def color_text_match(self, text, match):
+
+        # The length of match will be needed multiple times so store it in a variable.
+        span = len(match)
+        colored_text = ''
+        i = 0
+
+        # Loop through the characters in text.
+        while i < len(text):
+            
+            # Check to see if a section of the text matches and add that section as colored text to colored_text if it does.
+            if text[i: i + span] == match:
+                colored_text += colored(match, 'yellow', attrs=['bold'])
+                i += span
+            else:
+                colored_text += text[i]
+                i += 1
+
+        return colored_text
 
     # Allows the user to search for entries that contain the search string.
     def search_entries(self):
         print()
-        text = input('Enter a string to search: ')
-        entries = self.journal.search(text)
+        search_string = input('Enter a string to search: ')
+        entries = self.journal.search(search_string)
         if not entries:
             print()
             print('Nothing found.')
         else:
-            self.show_entries(entries)
+            self.show_entries(entries, search_string)
 
     # Lets the user write a new entry to the journal.
     def new_entry(self):

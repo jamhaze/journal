@@ -90,7 +90,6 @@ class Journal:
         # A list of all words from longest to shortest.
         sorted_by_len = sorted(all_words, key=len, reverse=True)
 
-        #TODO make sure there are no duplicates.
         # Return a list that either contains the top twenty longest words or all the words if there are less than twenty
         # words. (The zip function returns an iterator that is the length of the parameter with the least items)
         return [x for _, x in zip(range(20), sorted_by_len)]
