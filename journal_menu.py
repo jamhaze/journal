@@ -56,7 +56,7 @@ Stats Menu
         os.system('color')
         
         print()
-        print('Journal')
+        print('~ Journal ~')
 
         choice = ''
         while choice != '5':
