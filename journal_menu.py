@@ -16,7 +16,8 @@ class Menu:
                 '1': self.search_entries,
                 '2': self.new_entry,
                 '3': self.random_entry,
-                '4': self.stats
+                '4': self.delete_entry,
+                '5': self.stats
                 }
 
         self.stats_choices = {
@@ -34,9 +35,9 @@ Main Menu
 1. Search Entries
 2. New Entry
 3. Random Entry
-4. Stats
-5. Quit
-''')
+4. Delete Entry
+5. Stats
+6. Quit''')
 
     # This method prints the stats menu.
     def display_stats_menu(self):
@@ -47,8 +48,7 @@ Stats Menu
 2. Longest Words
 3. Most Common Letters
 4. Most Common Word Combos
-5. Back to Main Menu
-''')
+5. Back to Main Menu''')
 
     # This method runs the main menu in a loop until the user selects '5' (Quit).
     def run(self):
@@ -59,20 +59,22 @@ Stats Menu
         print('~ Journal ~')
 
         choice = ''
-        while choice != '5':
+        final_choice = str(len(self.main_choices) + 1)
+
+        while choice != final_choice:
 
             self.display_main_menu()
 
             # Call the make_choice method and send the main_choices dictionary as a parameter.
             choice = self.make_choice(self.main_choices)
 
-        print()
         print('Thank you for using your journal today.')
+        self.journal.save()
         sys.exit(0)
             
     # This method dispalys all the elements in the list entries
     def show_entries(self, entries, match):
-
+        
         for entry in entries:
 
             self.show_entry(entry, match=match)
@@ -118,15 +120,50 @@ Stats Menu
         return colored_text
 
     # Allows the user to search for entries that contain the search string.
-    def search_entries(self):
+    def search_entries(self, display=True):
         print()
         search_string = input('Enter a string to search: ')
+
         entries = self.journal.search(search_string)
+
         if not entries:
             print()
             print('Nothing found.')
+
         else:
-            self.show_entries(entries, search_string)
+            print()
+            print(str(len(entries)) + ' entries found')
+
+            if display:
+                self.show_entries(entries, search_string)
+
+        return entries
+
+    def create_entry_menu_and_choices(self, entries, method):
+
+        menu = ''
+        choices = {}
+
+        i = 0
+        while i < len(entries):
+
+            entry = entries[i]
+
+            choice_num = str(i+1)
+            menu += choice_num + '. ' + str(entry.date) + ' - '
+
+            if len(entry.words) <= 80:
+                menu += entry.words + '\n'
+            else:
+                menu += entry.words[:80] + '...\n'
+
+            choices[choice_num] = (method, entry)
+            i += 1
+
+
+        menu += str(i+1) + '. Back to main menu.'
+
+        return menu, choices
 
     # Lets the user write a new entry to the journal.
     def new_entry(self):
@@ -140,11 +177,33 @@ Stats Menu
         # Can call show_entry to display the single entry.
         self.show_entry(entry)
 
+    def delete_entry(self):
+        print()
+        print('You must search for the entry you wish to delete.')
+        entries = self.search_entries(display=False)
+
+        if entries != None:
+
+            menu, choices = self.create_entry_menu_and_choices(entries, self.journal.delete_entry)
+
+            final_choice = str(len(entries) + 1)
+            choice = ''
+
+            while choice != final_choice and choice not in choices.keys():
+
+                print()
+                print(menu)
+
+                choice = self.make_choice(choices)
+
     # This method is called when the user selects the stats option from the main menu.  It runs the
     # stats menu in a loop until the user selects '5'.
     def stats(self):
+
         choice = ''
-        while choice != '5':
+        final_choice = str(len(self.stats_choices) + 1)
+
+        while choice != final_choice:
             self.display_stats_menu()
 
             # Call the make choice method and pass the stats_choices dictionary as a parameter.
@@ -216,6 +275,7 @@ Stats Menu
     # processes a choice gathered from the user.
     def make_choice(self, choices):
 
+        print()
         choice = input('Enter an option: ')
 
         # If the choice is a key in the dictionary, the action variable will contain a method.  If it is
@@ -223,10 +283,13 @@ Stats Menu
         action = choices.get(choice)
         final_choice = str(len(choices) + 1)
 
+        # If action is not None it will contain a method and it can be called.
         if action:
 
-            # If action is not None it will contain a method and it can be called.
-            action()
+            if type(action) == tuple:
+                action[0](action[1])
+            else:
+                action()
 
         elif choice != final_choice:
 

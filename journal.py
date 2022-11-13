@@ -34,10 +34,6 @@ class Journal:
         # Create a new Entry object with the words supplied by the user and append it to the entries list.
         self.entries.append(Entry(words))
 
-        # Dump the entries array into the pickle file.
-        with open(os.path.join(sys.path[0], 'list.pkl'), 'wb') as file:
-            pickle.dump(self.entries, file)
-
     # This method returns a list with entries that contain the text parameter in the date or words.
     def search(self, text):
         
@@ -48,6 +44,9 @@ class Journal:
 
         index = random.randint(0, len(self.entries) - 1)
         return self.entries[index]
+
+    def delete_entry(self, entry):
+        self.entries.remove(entry)
 
     # Returns a list containing all the words in all entries.
     def return_all_words(self):
@@ -129,6 +128,12 @@ class Journal:
         c = Counter(all_combos)
 
         return c.most_common(10)
+
+    def save(self):
+        # Dump the entries array into the pickle file.
+        with open(os.path.join(sys.path[0], 'list.pkl'), 'wb') as file:
+            pickle.dump(self.entries, file)
+
 
 
             
