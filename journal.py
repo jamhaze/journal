@@ -33,6 +33,7 @@ class Journal:
 
         # Create a new Entry object with the words supplied by the user and append it to the entries list.
         self.entries.append(Entry(words))
+        self.save()
 
     # This method returns a list with entries that contain the text parameter in the date or words.
     def search(self, text):
@@ -47,6 +48,7 @@ class Journal:
 
     def delete_entry(self, entry):
         self.entries.remove(entry)
+        self.save()
 
     # Returns a list containing all the words in all entries.
     def return_all_words(self):
