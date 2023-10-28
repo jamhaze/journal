@@ -1,0 +1,2 @@
+termcolor==2.0.1
+texttable==1.6.4

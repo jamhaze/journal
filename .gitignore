@@ -1,3 +1,4 @@
+journal_venv/
 __pycache__/
 journal_menu.bat
 *.pyc
