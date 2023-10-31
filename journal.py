@@ -1,4 +1,5 @@
-# journal.py
+# journal.py - on class for a journal object and another for a journal
+# entry
 
 import datetime, pickle, random,  re, string, os, sys
 from collections import Counter
